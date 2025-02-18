@@ -23,7 +23,8 @@ function ArticlesList({ limit, setTotalCount, page }) {
       })
       .catch((error) => {
         console.error("Error fetching articles:", error);
-        setArticlesData({ articles: [], article_count: 0 });
+        setArticlesData({ articles: [], total_count: 0 });
+        setTotalCount(0);
       });
   }, [page]);
 
@@ -32,7 +33,7 @@ function ArticlesList({ limit, setTotalCount, page }) {
   }
 
   if (articlesData.length === 0) {
-    return <p>No items found.</p>;
+    return <p>No articles found.</p>;
   }
 
   if (isOnHome) {
