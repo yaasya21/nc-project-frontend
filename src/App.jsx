@@ -6,7 +6,7 @@ import Grid from "@mui/material/Grid2";
 import Container from "@mui/material/Container";
 import Home from "./pages/Home";
 import AllArticles from "./pages/AllArticles";
-import SingleArticle from "./pages/SIngleArticle";
+import SingleArticle from "./pages/SingleArticle";
 
 function App() {
   return (

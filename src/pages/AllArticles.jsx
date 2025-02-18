@@ -1,9 +1,9 @@
 import ArticlesList from "../components/ArticlesList/ArticlesList";
-import { Button, Stack } from "@mui/material";
-import { Link } from "react-router";
+import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Pagination from "@mui/material/Pagination";
 import { useState } from "react";
+import { Box } from "@mui/material";
 
 function AllArticles() {
   const [page, setPage] = useState(1);
@@ -23,13 +23,29 @@ function AllArticles() {
       >
         <ArticlesList limit={6} setTotalCount={setTotalCount} page={page} />
       </Stack>
-      <Pagination
-        count={pages}
-        page={page}
-        onChange={handleChange}
-        size="large"
-        sx={{ display: "flex", justifyContent: "center" }}
-      />
+      <Box
+        sx={{
+          position: "sticky",
+          bottom: 0,
+          zIndex: 10,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "white",
+          opacity: 0.9,
+          padding: "0.5rem 1.5rem",
+          borderRadius: "40px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+          margin: "0 auto",
+        }}
+      >
+        <Pagination
+          count={pages}
+          page={page}
+          onChange={handleChange}
+          size="large"
+        />
+      </Box>
     </Stack>
   );
 }
