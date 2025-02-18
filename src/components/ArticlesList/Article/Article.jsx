@@ -16,10 +16,14 @@ import { Link } from "react-router";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import axios from "axios";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 
 function Article({ article }) {
   const [articleData, setArticleData] = useState(null);
   const { article_id } = useParams();
+  const [currentVotes, setCurrentVotes] = useState(0);
+  const [voteStatus, setVoteStatus] = useState(0); // -1 dislike, 0 no vote, 1 like
 
   useEffect(() => {
     if (!article && article_id) {
@@ -29,15 +33,51 @@ function Article({ article }) {
         .get(apiUrl)
         .then((response) => {
           setArticleData(response.data.article);
+          setCurrentVotes(response.data.article.votes);
         })
         .catch((error) => {
           console.error("Error fetching article:", error);
           setArticleData({ article: {} });
         });
+    } else if (article) {
+      setCurrentVotes(article.votes);
+    }
+    const storedVote = localStorage.getItem(
+      `article_${article_id || article.article_id}_voted`
+    );
+    if (storedVote === "1") {
+      setVoteStatus(1);
+    } else if (storedVote === "-1") {
+      setVoteStatus(-1);
     }
   }, [article_id, article]);
 
   const displayArticle = article || articleData;
+
+  const handleVote = (vote) => {
+    const currentIncrement = vote - voteStatus;
+    setCurrentVotes(currentVotes + currentIncrement);
+    setVoteStatus(vote);
+    const apiUrl = `https://nc-project-iwre.onrender.com/api/articles/${displayArticle.article_id}`;
+    axios
+      .patch(apiUrl, { inc_votes: currentIncrement })
+      .then(() => {
+        if (vote === 0) {
+          localStorage.removeItem(`article_${displayArticle.article_id}_voted`);
+        } else {
+          localStorage.setItem(
+            `article_${displayArticle.article_id}_voted`,
+            vote
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error voting:", error);
+        setCurrentVotes(currentVotes - currentIncrement);
+        setVoteStatus(voteStatus - currentIncrement);
+        alert("Failed to vote. Please try again:)");
+      });
+  };
 
   if (!displayArticle) {
     return <p>Loading...</p>;
@@ -48,7 +88,7 @@ function Article({ article }) {
     displayArticle.article &&
     Object.keys(displayArticle.article).length === 0
   ) {
-    return <p>No items found.</p>;
+    return <p>Article is not found.</p>;
   }
   return (
     <Card
@@ -88,19 +128,36 @@ function Article({ article }) {
           <span className={styles.card_title}>{displayArticle.title}</span>
         </Typography>
 
-        
-       {articleData && <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {articleData.body}
-        </Typography>}
-
+        {articleData && (
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            {articleData.body}
+          </Typography>
+        )}
       </CardContent>
 
       <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>
         <Stack direction="row" gap={1} sx={{ alignItems: "center" }}>
-          <IconButton aria-label="add to favorites">
-            <Typography variant="body5">{displayArticle.votes}</Typography>
-            <FavoriteIcon />
-          </IconButton>
+          <Stack direction="row" sx={{ alignItems: "center" }}>
+            <IconButton
+              aria-label="like"
+              onClick={() => handleVote(voteStatus === 1 ? 0 : 1)} // like or unlike
+              disabled={voteStatus === -1}
+            >
+              <ArrowUpwardIcon
+                sx={{ color: voteStatus === 1 ? "green" : "inherit" }}
+              />
+            </IconButton>
+            <Typography variant="h6">{currentVotes}</Typography>
+            <IconButton
+              aria-label="dislike"
+              onClick={() => handleVote(voteStatus === -1 ? 0 : -1)} // dislike or undislike
+              disabled={voteStatus === 1}
+            >
+              <ArrowDownwardIcon
+                sx={{ color: voteStatus === -1 ? "red" : "inherit" }}
+              />
+            </IconButton>
+          </Stack>
           <Typography variant="h7" color="black">
             {new Date(displayArticle.created_at).toLocaleDateString()}
           </Typography>

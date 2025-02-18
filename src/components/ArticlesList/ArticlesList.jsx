@@ -6,7 +6,6 @@ import Grid from "@mui/material/Grid2";
 import { useLocation } from "react-router";
 
 function ArticlesList({ limit, setTotalCount, page }) {
-  console.log(limit);
   const [articlesData, setArticlesData] = useState();
   const location = useLocation();
   const isOnHome = location.pathname === "/";

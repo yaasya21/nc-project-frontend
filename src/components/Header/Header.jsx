@@ -9,7 +9,6 @@ import styles from "./Header.module.css";
 
 function Header() {
   const { loggedInUser } = useContext(User);
-  console.log(loggedInUser);
   return (
     <AppBar position="fixed" sx={{ height: "100px", backgroundColor: "white" }}>
       <Toolbar
