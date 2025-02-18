@@ -1,4 +1,4 @@
-import ArticlesList from "../../components/ArticlesList/ArticlesList";
+import ArticlesList from "../components/ArticlesList/ArticlesList";
 import { Button, Stack } from "@mui/material";
 import { Link } from "react-router";
 import Typography from "@mui/material/Typography";

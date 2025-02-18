@@ -19,11 +19,11 @@ function ArticlesList({ limit, setTotalCount, page }) {
       .get(apiUrl)
       .then((data) => {
         setArticlesData(data.data);
-        setTotalCount(data.data.total_count);
+        setTotalCount && setTotalCount(data.data.total_count);
       })
       .catch((error) => {
-        console.error("Error fetching items:", error);
-        setItemsData({ items: [] });
+        console.error("Error fetching articles:", error);
+        setArticlesData({ articles: [], article_count: 0 });
       });
   }, [page]);
 
