@@ -95,14 +95,10 @@ function Article({ article, article_id, setPage }) {
   return (
     <Card
       sx={{
-        width: "100%",
-        maxWidth: "400px",
+        width:articleData ? "auto" : 335,
+        maxWidth: articleData ? "100%" : "400px",
         minWidth: 0,
         margin: "1rem",
-        ...(articleData && {
-          minWidth: 0,
-          maxWidth: "100%",
-        }),
       }}
     >
       <CardHeader

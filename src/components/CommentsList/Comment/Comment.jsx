@@ -8,15 +8,44 @@ import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Chip from "@mui/material/Chip";
+import DeleteIcon from "@mui/icons-material/Delete";
+import axios from "axios";
+import { useState } from "react";
 
-function Comment({ comment }) {
+function Comment({
+  comment,
+  loggedInUser,
+  setDeletedComment,
+  setSuccessMessage,
+  setErrorMessage,
+}) {
+  const isSelf = comment.author === loggedInUser.username;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleCommentDelete = () => {
+    setIsSubmitting(true);
+    const apiUrl = `https://nc-project-iwre.onrender.com/api/comments/${comment.comment_id}`;
+    axios
+      .delete(apiUrl)
+      .then(() => {
+        setDeletedComment((currentCounter) => currentCounter + 1);
+        setSuccessMessage("Comment deleted successfully!");
+        setTimeout(() => setSuccessMessage(null), 3000);
+      })
+      .catch((error) => {
+        console.error("Error deleting:", error);
+        setErrorMessage("Comment has not been deleted!");
+        setTimeout(() => setErrorMessage(null), 3000);
+      })
+      .finally(() => setIsSubmitting(false));
+  };
   return (
     <Card
       sx={{
         maxWidth: "100%",
         minWidth: 0,
         margin: "0 1rem",
-        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
+        boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.1)",
         border: "1px solid #e0e0e0",
       }}
     >
@@ -41,11 +70,27 @@ function Comment({ comment }) {
         </Typography>
       </CardContent>
 
-      <CardActions sx={{ padding: "0.3rem 1rem", display: 'flex', justifyContent: 'flex-end' }}>
-          <IconButton size="small" aria-label="add to favorites">
-            <Typography variant="body6">{comment.votes}</Typography>
-            <FavoriteIcon />
+      <CardActions
+        sx={{
+          padding: "0.3rem 1.5rem",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <IconButton size="small" aria-label="like">
+          <Typography variant="body6">{comment.votes}</Typography>
+          <FavoriteIcon />
+        </IconButton>
+        {isSelf && (
+          <IconButton
+            size="small"
+            aria-label="delete"
+            disabled={isSubmitting}
+            onClick={handleCommentDelete}
+          >
+            <DeleteIcon />
           </IconButton>
+        )}
       </CardActions>
     </Card>
   );
