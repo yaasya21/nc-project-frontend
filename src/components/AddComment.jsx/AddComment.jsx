@@ -1,17 +1,18 @@
 import Card from "@mui/material/Card";
 import TextField from "@mui/material/TextField";
+import Snackbar from "@mui/material/Snackbar";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { useState } from "react";
-import { User } from "../../contexts/User";
-import { useContext } from "react";
 import axios from "axios";
 
-function AddComment({ article_id, setNewComment }) {
-  const { loggedInUser } = useContext(User);
+function AddComment({ article_id, setNewComment, loggedInUser }) {
   const [formData, setFormData] = useState({
     body: "",
   });
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const handleChange = (event) => {
     setFormData({
       body: event.target.value,
@@ -19,35 +20,47 @@ function AddComment({ article_id, setNewComment }) {
   };
   const handleSubmit = (event) => {
     event.preventDefault();
+    setIsSubmitting(true);
 
     const dataToSend = {
       ...formData,
       username: loggedInUser.username,
     };
 
-    console.log(dataToSend)
-
     axios
-      .post(`https://nc-project-iwre.onrender.com/api/articles/${article_id}/comments`, dataToSend, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
+      .post(
+        `https://nc-project-iwre.onrender.com/api/articles/${article_id}/comments`,
+        dataToSend,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
       .then(() => {
         setFormData({
-          body: ""
+          body: "",
         });
-        setNewComment((currentCounter) => {
-          console.log(currentCounter)
-          return currentCounter + 1;
-        });
+        setNewComment((currentCounter) => currentCounter + 1);
+        setSuccessMessage("Comment posted successfully!");
+        setTimeout(() => setSuccessMessage(null), 3000);
       })
       .catch((error) => {
         console.error("Error listing items:", error);
-      });
+        setErrorMessage("Comment has not been posted!");
+        setTimeout(() => setErrorMessage(null), 3000);
+      })
+      .finally(() => setIsSubmitting(false));
   };
   return (
     <Box sx={{ width: "100%" }}>
+      {(successMessage || errorMessage) && (
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          message={successMessage || errorMessage}
+        />
+      )}
       <Card
         sx={{
           maxWidth: "100%",
@@ -79,9 +92,10 @@ function AddComment({ article_id, setNewComment }) {
               size="small"
               variant="contained"
               type="submit"
+              disabled={isSubmitting}
               sx={{ margin: "0 0.5rem 0.5rem 0" }}
             >
-              Respond
+              {isSubmitting ? "Submitting..." : "Respond"}
             </Button>
           </Box>
         </form>
