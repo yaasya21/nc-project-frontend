@@ -1,6 +1,5 @@
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
-import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Avatar from "@mui/material/Avatar";
@@ -16,8 +15,8 @@ function Comment({ comment }) {
       sx={{
         maxWidth: "100%",
         minWidth: 0,
-        margin: "1rem",
-        boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.1)",
+        margin: "0 1rem",
+        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
         border: "1px solid #e0e0e0",
       }}
     >
@@ -42,17 +41,11 @@ function Comment({ comment }) {
         </Typography>
       </CardContent>
 
-      <CardActions
-        sx={{
-          padding: "0.3rem 1rem",
-          display: "flex",
-          justifyContent: "flex-end",
-        }}
-      >
-        <IconButton size="small" aria-label="add to favorites">
-          <Typography variant="body6">{comment.votes}</Typography>
-          <FavoriteIcon />
-        </IconButton>
+      <CardActions sx={{ padding: "0.3rem 1rem", display: 'flex', justifyContent: 'flex-end' }}>
+          <IconButton size="small" aria-label="add to favorites">
+            <Typography variant="body6">{comment.votes}</Typography>
+            <FavoriteIcon />
+          </IconButton>
       </CardActions>
     </Card>
   );
