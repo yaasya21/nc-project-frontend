@@ -3,21 +3,33 @@ import { useState, useEffect } from "react";
 import Stack from "@mui/material/Stack";
 import Article from "./Article/Article";
 import Grid from "@mui/material/Grid2";
-import { useLocation } from "react-router";
+import { useLocation, useSearchParams } from "react-router";
 
-function ArticlesList({ limit, setTotalCount, page }) {
+function ArticlesList({ limit, setTotalCount, setPage }) {
   const [articlesData, setArticlesData] = useState();
   const location = useLocation();
   const isOnHome = location.pathname === "/";
+  const [searchParams] = useSearchParams();
+  const pageFromUrl = Number(searchParams.get("p"));
+  const sortFromUrl = searchParams.get("topic");
 
   useEffect(() => {
     let apiUrl = `https://nc-project-iwre.onrender.com/api/articles?limit=${
-      limit ? limit : 10
-    }&p=${page ? page : 1}`;
+      limit || 10
+    }&p=${pageFromUrl || 1}`;
+
+    if (sortFromUrl) {
+      apiUrl += `&topic=${sortFromUrl}`;
+    }
+
     axios
       .get(apiUrl)
       .then((data) => {
-        setArticlesData(data.data);
+        if (data.data.articles.length === 0) {
+          setPage(1); // if user manually adds non-existent page to url
+        } else {
+          setArticlesData(data.data);
+        }
         setTotalCount && setTotalCount(data.data.total_count);
       })
       .catch((error) => {
@@ -25,13 +37,13 @@ function ArticlesList({ limit, setTotalCount, page }) {
         setArticlesData({ articles: [], total_count: 0 });
         setTotalCount(0);
       });
-  }, [page]);
+  }, [pageFromUrl, sortFromUrl]);
 
   if (!articlesData) {
     return <p>Loading...</p>;
   }
 
-  if (articlesData.length === 0) {
+  if (articlesData.total_count === 0) {
     return <p>No articles found.</p>;
   }
 
