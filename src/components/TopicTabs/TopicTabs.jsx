@@ -14,7 +14,6 @@ function TopicTabs({ setTopic, setPage }) {
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTopic = searchParams.get("topic");
-  console.log(initialTopic);
 
   useEffect(() => {
     axios
@@ -22,7 +21,7 @@ function TopicTabs({ setTopic, setPage }) {
       .then((data) => {
         setTopics((prevTopics) => [...prevTopics, ...data.data.topics]);
 
-        if (initialTopic) {
+        if (initialTopic) { // if topic added manualy to url or after refresh
           const index = data.data.topics.findIndex(
             (topic) => topic.slug === initialTopic
           );
