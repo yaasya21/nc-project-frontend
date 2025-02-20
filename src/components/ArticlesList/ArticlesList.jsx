@@ -11,15 +11,21 @@ function ArticlesList({ limit, setTotalCount, setPage }) {
   const isOnHome = location.pathname === "/";
   const [searchParams] = useSearchParams();
   const pageFromUrl = Number(searchParams.get("p"));
-  const sortFromUrl = searchParams.get("topic");
+  const topicFromUrl = searchParams.get("topic");
+  const sortFromUrl = searchParams.get("sort_by");
+  const orderFromUrl = searchParams.get("order");
 
   useEffect(() => {
     let apiUrl = `https://nc-project-iwre.onrender.com/api/articles?limit=${
       limit || 10
     }&p=${pageFromUrl || 1}`;
 
+    if (topicFromUrl) {
+      apiUrl += `&topic=${topicFromUrl}`;
+    }
+
     if (sortFromUrl) {
-      apiUrl += `&topic=${sortFromUrl}`;
+      apiUrl += `&sort_by=${sortFromUrl}&order=${orderFromUrl}`;
     }
 
     axios
@@ -37,7 +43,7 @@ function ArticlesList({ limit, setTotalCount, setPage }) {
         setArticlesData({ articles: [], total_count: 0 });
         setTotalCount(0);
       });
-  }, [pageFromUrl, sortFromUrl]);
+  }, [pageFromUrl, topicFromUrl, sortFromUrl, orderFromUrl]);
 
   if (!articlesData) {
     return <p>Loading...</p>;

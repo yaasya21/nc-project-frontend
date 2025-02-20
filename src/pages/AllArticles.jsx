@@ -5,16 +5,22 @@ import { useState, useEffect } from "react";
 import { Box } from "@mui/material";
 import TopicTabs from "../components/TopicTabs/TopicTabs";
 import { useSearchParams } from "react-router";
+import SortByButton from "../components/SortByButton/SortByButton";
 
 function AllArticles() {
   const [searchParams, setSearchParams] = useSearchParams();
 
+  // if any queries added manualy to url or after refresh
   const initialPage = Number(searchParams.get("p")) || 1;
   const initialTopic = searchParams.get("topic") || "all";
+  const initialSort = searchParams.get("sort_by") || "none";
+  const initialOrder = searchParams.get("order") || "desc";
 
   const [page, setPage] = useState(initialPage);
   const [totalCount, setTotalCount] = useState(0);
   const [topic, setTopic] = useState(initialTopic);
+  const [sort, setSort] = useState(initialSort);
+  const [order, setOrder] = useState(initialOrder);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -22,9 +28,13 @@ function AllArticles() {
       params.set("topic", topic);
     }
     params.set("p", page);
+    if (sort !== "none") {
+      params.set("sort_by", sort);
+      params.set("order", order);
+    }
 
     setSearchParams(params);
-  }, [page, topic, setSearchParams]);
+  }, [page, topic, sort, order, setSearchParams]);
 
   const handleChange = (event, value) => {
     setPage(value);
@@ -35,6 +45,13 @@ function AllArticles() {
   return (
     <Stack gap={3}>
       <TopicTabs setTopic={setTopic} setPage={setPage} />
+      <SortByButton
+        setSort={setSort}
+        setOrder={setOrder}
+        initialSort={initialSort}
+        initialOrder={initialOrder}
+        setPage={setPage}
+      />
       <Stack
         direction="row"
         flexWrap="wrap"
