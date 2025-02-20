@@ -35,7 +35,7 @@ function Article({ article, article_id, setPage }) {
         })
         .catch((error) => {
           console.error("Error fetching article:", error);
-          setArticleData({ article: {} });
+          setArticleData({});
         });
     } else if (article) {
       setCurrentVotes(article.votes);

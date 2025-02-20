@@ -22,8 +22,8 @@ function CommentsList({
     axios
       .get(apiUrl)
       .then((data) => {
-        setCommentsData(data.data);
-        setTotalCount(data.data.total_count);
+          setCommentsData(data.data);
+          setTotalCount(data.data.total_count);
       })
       .catch((error) => {
         console.error("Error fetching articles:", error);

@@ -4,6 +4,7 @@ import Typography from "@mui/material/Typography";
 import Pagination from "@mui/material/Pagination";
 import { useState } from "react";
 import { Box } from "@mui/material";
+import TopicTabs from "../components/TopicTabs/TopicTabs";
 
 function AllArticles() {
   const [page, setPage] = useState(1);
@@ -13,7 +14,8 @@ function AllArticles() {
   };
   const pages = Math.ceil(totalCount / 6);
   return (
-    <Stack gap={7}>
+    <Stack gap={3}>
+      <TopicTabs />
       <Typography variant="h4">All Articles</Typography>
       <Stack
         direction="row"
