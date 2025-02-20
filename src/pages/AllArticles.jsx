@@ -1,29 +1,51 @@
 import ArticlesList from "../components/ArticlesList/ArticlesList";
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import Pagination from "@mui/material/Pagination";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box } from "@mui/material";
 import TopicTabs from "../components/TopicTabs/TopicTabs";
+import { useSearchParams } from "react-router";
 
 function AllArticles() {
-  const [page, setPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const initialPage = Number(searchParams.get("p")) || 1;
+  const initialTopic = searchParams.get("topic") || "all";
+
+  const [page, setPage] = useState(initialPage);
   const [totalCount, setTotalCount] = useState(0);
+  const [topic, setTopic] = useState(initialTopic);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (topic !== "all") {
+      params.set("topic", topic);
+    }
+    params.set("p", page);
+
+    setSearchParams(params);
+  }, [page, topic, setSearchParams]);
+
   const handleChange = (event, value) => {
     setPage(value);
   };
+
   const pages = Math.ceil(totalCount / 6);
+
   return (
     <Stack gap={3}>
-      <TopicTabs />
-      <Typography variant="h4">All Articles</Typography>
+      <TopicTabs setTopic={setTopic} setPage={setPage} />
       <Stack
         direction="row"
         flexWrap="wrap"
         gap={10}
         sx={{ justifyContent: "center", alignItems: "center" }}
       >
-        <ArticlesList limit={6} setTotalCount={setTotalCount} page={page} />
+        <ArticlesList
+          limit={6}
+          setTotalCount={setTotalCount}
+          setPage={setPage}
+        />
       </Stack>
       <Box
         sx={{

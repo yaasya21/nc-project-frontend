@@ -16,27 +16,29 @@ function CommentsList({
   const [deletedComment, setDeletedComment] = useState(0);
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [isloading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let apiUrl = `https://nc-project-iwre.onrender.com/api/articles/${article_id}/comments?limit=2&p=${page}`;
     axios
       .get(apiUrl)
       .then((data) => {
-          setCommentsData(data.data);
-          setTotalCount(data.data.total_count);
+        setCommentsData(data.data);
+        setTotalCount(data.data.total_count);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching articles:", error);
         setCommentsData({ comments: [], total_count: 0 });
-        setTotalCount(0);
+        setIsLoading(false);
       });
   }, [page, newComment, deletedComment]);
 
-  if (!commentsData) {
+  if (isloading) {
     return <p>Loading...</p>;
   }
 
-  if (commentsData.length === 0) {
+  if (commentsData.total_count === 0) {
     return <p>No responses yet.</p>;
   }
 

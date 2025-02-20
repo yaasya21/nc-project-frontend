@@ -1,43 +1,65 @@
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router";
 import axios from "axios";
 
-function TopicTabs() {
+function TopicTabs({ setTopic, setPage }) {
   const [value, setValue] = useState(0);
-  const [topics, setTopics] = useState([]);
+  const [topics, setTopics] = useState([
+    { slug: "all", description: "All articles" },
+  ]);
+  const [loading, setLoading] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTopic = searchParams.get("topic");
+  console.log(initialTopic);
 
   useEffect(() => {
     axios
       .get("https://nc-project-iwre.onrender.com/api/topics")
       .then((data) => {
-        setTopics(data.data.topics);
-        console.log(topics);
+        setTopics((prevTopics) => [...prevTopics, ...data.data.topics]);
+
+        if (initialTopic) {
+          const index = data.data.topics.findIndex(
+            (topic) => topic.slug === initialTopic
+          );
+          const correctIndex = index === -1 ? 0 : index + 1;
+
+          setValue(correctIndex);
+          setTopic(index === -1 ? "all" : data.data.topics[index].slug);
+        }
       })
       .catch((error) => {
         console.error("Error fetching topics:", error);
-        setTopics([]);
-      });
+        setTopics([{ slug: "all", description: "All articles" }]);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    setTopic(topics[newValue].slug);
+    setPage(1);
   };
 
   return (
     <>
-      {!topics && <p>Loading topics...</p>}
-      {topics && topics.length === 0 && <p>No topics found.</p>}
+      {loading && <p>Loading topics...</p>}
 
-      {topics.length > 0 && (
-           <Box sx={{ width: "100%", bgcolor: "background.paper" }}>
-          <Tabs value={value} onChange={handleChange} centered> 
-            {topics.map((topic, index) => ( 
-              <Tab key={topic.slug || index} label={topic.slug} /> 
-            ))}
-          </Tabs>
-        </Box>
+      {!loading && (
+        <>
+          <Box sx={{ width: "100%", bgcolor: "background.paper" }}>
+            <Tabs value={value} onChange={handleChange} centered>
+              {topics.map((topic, index) => (
+                <Tab key={topic.slug || index} label={topic.slug} />
+              ))}
+            </Tabs>
+          </Box>
+          <Typography variant="h4">{topics[value].description}</Typography>
+        </>
       )}
     </>
   );
