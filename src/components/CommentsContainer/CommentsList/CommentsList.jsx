@@ -4,6 +4,7 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Comment from "./Comment/Comment";
 import Snackbar from "@mui/material/Snackbar";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function CommentsList({
   page,
@@ -24,8 +25,11 @@ function CommentsList({
       .get(apiUrl)
       .then((data) => {
         setCommentsData(data.data);
-        setTotalCount(data.data.total_count);
         setIsLoading(false);
+        if (data.data.total_count !== 0) {
+          // not to show pagination when there are no comments
+          setTotalCount(data.data.total_count);
+        }
       })
       .catch((error) => {
         console.error("Error fetching articles:", error);
@@ -35,7 +39,11 @@ function CommentsList({
   }, [page, newComment, deletedComment]);
 
   if (isloading) {
-    return <p>Loading...</p>;
+    return (
+      <Box sx={{ display: "flex" }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (commentsData.total_count === 0) {

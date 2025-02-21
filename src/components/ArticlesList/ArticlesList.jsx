@@ -1,9 +1,11 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
 import Article from "./Article/Article";
 import Grid from "@mui/material/Grid2";
 import { useLocation, useSearchParams } from "react-router";
+import CircularProgress from '@mui/material/CircularProgress';
 
 function ArticlesList({ limit, setTotalCount, setPage }) {
   const [articlesData, setArticlesData] = useState();
@@ -46,7 +48,11 @@ function ArticlesList({ limit, setTotalCount, setPage }) {
   }, [pageFromUrl, topicFromUrl, sortFromUrl, orderFromUrl]);
 
   if (!articlesData) {
-    return <p>Loading...</p>;
+    return (
+      <Box sx={{ display: "flex" }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (articlesData.total_count === 0) {

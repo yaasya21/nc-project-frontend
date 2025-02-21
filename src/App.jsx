@@ -7,6 +7,7 @@ import Container from "@mui/material/Container";
 import Home from "./pages/Home";
 import AllArticles from "./pages/AllArticles";
 import SingleArticle from "./pages/SingleArticle";
+import Page404 from "./pages/Page404";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/articles" element={<AllArticles />} />
             <Route path="/articles/:article_id" element={<SingleArticle />} />
+            <Route path="*" element={<Page404 />} />
           </Routes>
         </Grid>
       </Box>

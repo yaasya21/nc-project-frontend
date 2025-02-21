@@ -7,17 +7,16 @@ import { useState } from "react";
 
 function SingleArticle() {
   const [page, setPage] = useState(1);
+  const [articleExists, setArticleExists] = useState(false);
   const { article_id } = useParams();
 
   return (
     <Container maxWidth="md">
       <Stack gap={2} sx={{ alignItems: "center" }}>
-        <Article article_id={article_id} setPage={setPage} />
-        <CommentsContainer
-          setPage={setPage}
-          page={page}
-          article_id={article_id}
-        />
+        <Article article_id={article_id} setPage={setPage} setArticleExists={setArticleExists} />
+        {articleExists && (
+          <CommentsContainer setPage={setPage} page={page} article_id={article_id} />
+        )}
       </Stack>
     </Container>
   );
