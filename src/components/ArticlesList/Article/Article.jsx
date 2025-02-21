@@ -7,7 +7,6 @@ import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import styles from "./Article.module.css";
 import Chip from "@mui/material/Chip";
 import Button from "@mui/material/Button";
@@ -17,11 +16,14 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import { useNavigate } from "react-router";
 
-function Article({ article, article_id, setPage }) {
+function Article({ article, article_id, setPage, setArticleExists }) {
   const [articleData, setArticleData] = useState(null);
   const [currentVotes, setCurrentVotes] = useState(0);
   const [voteStatus, setVoteStatus] = useState(0); // -1 dislike, 0 no vote, 1 like
+
+  let navigate = useNavigate();
 
   useEffect(() => {
     if (!article && article_id) {
@@ -30,11 +32,14 @@ function Article({ article, article_id, setPage }) {
       axios
         .get(apiUrl)
         .then((response) => {
+          console.log(response);
           setArticleData(response.data.article);
           setCurrentVotes(response.data.article.votes);
+          setArticleExists(true);
         })
         .catch((error) => {
           console.error("Error fetching article:", error);
+          setArticleExists(false);
           setArticleData({});
         });
     } else if (article) {
@@ -84,18 +89,43 @@ function Article({ article, article_id, setPage }) {
   if (!displayArticle) {
     return <p>Loading...</p>;
   }
-
-  if (
-    displayArticle &&
-    displayArticle.article &&
-    Object.keys(displayArticle.article).length === 0
-  ) {
-    return <p>Article is not found.</p>;
+  if (Object.keys(displayArticle).length === 0) {
+    return (
+      <Stack sx={{ alignItems: "center" }}>
+        <Typography
+          variant="h1"
+          sx={{
+            fontSize: "8.0em",
+            textShadow: "3px 3px 0 rgba(0, 0, 0, 0.1)",
+            mb: 0,
+          }}
+        >
+          404
+        </Typography>
+        <Typography
+          variant="h2"
+          sx={{ fontSize: "2.0em", lineHeight: "2.0em", mt: 0 }}
+        >
+          Article Not Found
+        </Typography>
+        <Typography variant="body1" sx={{ mt: 2 }}>
+          The article you requested cannot be found.
+        </Typography>
+        <Button
+          variant="contained"
+          component={Link}
+          to="/articles"
+          sx={{ mt: 2 }}
+        >
+          Return to the articles
+        </Button>
+      </Stack>
+    );
   }
   return (
     <Card
       sx={{
-        width:articleData ? "auto" : 335,
+        width: articleData ? "auto" : 335,
         maxWidth: articleData ? "100%" : "400px",
         minWidth: 0,
         margin: "1rem",
